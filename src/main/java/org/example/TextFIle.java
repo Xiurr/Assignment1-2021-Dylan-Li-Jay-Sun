@@ -80,7 +80,7 @@ public class TextFIle extends JFrame {
         workArea.getDocument().addUndoableEditListener(um);
         add(jPanelNorth, BorderLayout.NORTH);
         add(imgScrollPane, BorderLayout.CENTER);
-
+        time().start();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
@@ -93,9 +93,12 @@ public class TextFIle extends JFrame {
         JMenu menuAbout = new JMenu("Help");
 
         //File functions
+        menuFile.add(newopen());
         menuFile.add(open());
         menuFile.addSeparator();
         menuFile.add(save());
+        menuFile.add(print());
+        menuFile.add(exit());
 
         menuEdit.add(search());
         //put them in the menubar
@@ -104,6 +107,30 @@ public class TextFIle extends JFrame {
         menubar.add(menuAbout);
 
         return menubar;
+    }
+
+    //the function to display time on the top of the text-editor
+    private Timer time()
+    {
+        return new Timer(1000, e -> {
+            long timemillis = System.currentTimeMillis();
+            SimpleDateFormat date = new SimpleDateFormat("yyyy / MM / dd ");
+            jLabelDate.setText("   Date:  " + date.format(new Date(timemillis)));
+            SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss ");
+            jLabelTime.setText("   Time:  " + time.format(new Date(timemillis)));
+        });
+    }
+
+
+    //For the next is diff functions about File
+    //open a new page
+    public JMenuItem newopen()
+    {
+        JMenuItem newopen = new JMenuItem("New(N)", KeyEvent.VK_N);
+        newopen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
+        newopen.addActionListener(e -> workArea.setDocument(new DefaultStyledDocument()));
+        return newopen;
+
     }
 
     //open a file which already been written
@@ -186,6 +213,42 @@ public class TextFIle extends JFrame {
         }
     }
 
+    //here is function about print files
+    private JMenuItem print()
+    {
+        JMenuItem print = new JMenuItem("Print(P)", KeyEvent.VK_P);
+        print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+        print.addActionListener(e -> {
+            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
+            PrintService[] printService = PrintServiceLookup.lookupPrintServices(flavor, pras);
+            PrintService defaultService = PrintServiceLookup.lookupDefaultPrintService();
+            PrintService service;
+            service = ServiceUI.printDialog(null, 100, 100, printService, defaultService, flavor, pras);
+            if (service != null)
+            {
+                DocPrintJob job = service.createPrintJob();
+                DocAttributeSet das = new HashDocAttributeSet();
+                Doc doc = new SimpleDoc(createJMenuBar().getMenu(0).getText().getBytes(), flavor, das);
+                try {
+                    job.print(doc, pras);
+                } catch (PrintException printException) {
+                    printException.printStackTrace();
+                }
+            }
+        });
+        return print;
+    }
+
+    //exit from the text-editor
+    private JMenuItem exit()
+    {
+        JMenuItem exit = new JMenuItem("Exit(E)", KeyEvent.VK_E);
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+        exit.addActionListener(arg0 -> System.exit(0));
+        return exit;
+    }
+
     //to find words which you want to notice
     private JMenuItem search()
     {
@@ -231,7 +294,7 @@ public class TextFIle extends JFrame {
 
             if(upButton.isSelected())
             {
-                k = index(str1,str2);
+                k = str1.lastIndexOf(str2, workArea.getCaretPosition()-findText.getText().length()-1);
                 if(k>-1)
                 {
                     workArea.setCaretPosition(k);
