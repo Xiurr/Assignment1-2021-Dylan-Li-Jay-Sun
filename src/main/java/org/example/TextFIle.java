@@ -100,7 +100,17 @@ public class TextFIle extends JFrame {
         menuFile.add(print());
         menuFile.add(exit());
 
+        //Edit functions
+        menuEdit.add(revocation());
+        menuEdit.addSeparator();
+        menuEdit.add(cut());
+        menuEdit.add(copy());
+        menuEdit.add(paste());
         menuEdit.add(search());
+
+        //Help functions
+        menuAbout.add(help());
+
         //put them in the menubar
         menubar.add(menuFile);
         menubar.add(menuEdit);
@@ -249,6 +259,49 @@ public class TextFIle extends JFrame {
         return exit;
     }
 
+    //here is function about edit
+
+    //revocation operation you did
+    private JMenuItem revocation()
+    {
+        workArea.getDocument().addUndoableEditListener(um);
+        JMenuItem revocation = new JMenuItem("Revocation(U)", KeyEvent.VK_Z);
+        revocation.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+        revocation.addActionListener(e -> {
+            if (um.canUndo()) {
+                um.undo();
+            }
+        });
+        return revocation;
+    }
+
+    //cut text from the whole one
+    private JMenuItem cut()
+    {
+        JMenuItem cut=new JMenuItem("Cut(T)", KeyEvent.VK_T);
+        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
+        cut.addActionListener(e -> workArea.cut());
+        return cut;
+    }
+
+    //copy, have another same one
+    private JMenuItem copy()
+    {
+        JMenuItem copy = new JMenuItem("Copy(C)", KeyEvent.VK_C);
+        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        copy.addActionListener(e -> workArea.copy());
+        return copy;
+    }
+
+    //put something you already copied
+    private JMenuItem paste()
+    {
+        JMenuItem paste = new JMenuItem("Paste(V)", KeyEvent.VK_V);
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+        paste.addActionListener(e -> workArea.paste());
+        return paste;
+    }
+
     //to find words which you want to notice
     private JMenuItem search()
     {
@@ -256,6 +309,16 @@ public class TextFIle extends JFrame {
         search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
         search.addActionListener(e -> Find());
         return search;
+    }
+
+    //here is function about help,it's just have names and StudentID who did the text-editor
+    private JMenuItem help()
+    {
+        JMenuItem help = new JMenuItem("Help(H)", KeyEvent.VK_H);
+        help.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
+        help.addActionListener(e -> JOptionPane.showMessageDialog(null,"Member A:Jay Sun 20007886 \n" +
+                "Member B:Dylan Li 20007903"));
+        return help;
     }
 
     //a function to help find
