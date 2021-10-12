@@ -80,7 +80,7 @@ public class TextFIle extends JFrame {
         workArea.getDocument().addUndoableEditListener(um);
         add(jPanelNorth, BorderLayout.NORTH);
         add(imgScrollPane, BorderLayout.CENTER);
-
+        time().start();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
@@ -93,17 +93,54 @@ public class TextFIle extends JFrame {
         JMenu menuAbout = new JMenu("Help");
 
         //File functions
+        menuFile.add(newopen());
         menuFile.add(open());
         menuFile.addSeparator();
         menuFile.add(save());
+        menuFile.add(print());
+        menuFile.add(exit());
 
+        //Edit functions
+        menuEdit.add(revocation());
+        menuEdit.addSeparator();
+        menuEdit.add(cut());
+        menuEdit.add(copy());
+        menuEdit.add(paste());
         menuEdit.add(search());
+
+        //Help functions
+        menuAbout.add(help());
+
         //put them in the menubar
         menubar.add(menuFile);
         menubar.add(menuEdit);
         menubar.add(menuAbout);
 
         return menubar;
+    }
+
+    //the function to display time on the top of the text-editor
+    private Timer time()
+    {
+        return new Timer(1000, e -> {
+            long timemillis = System.currentTimeMillis();
+            SimpleDateFormat date = new SimpleDateFormat("yyyy / MM / dd ");
+            jLabelDate.setText("   Date:  " + date.format(new Date(timemillis)));
+            SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss ");
+            jLabelTime.setText("   Time:  " + time.format(new Date(timemillis)));
+        });
+    }
+
+
+    //For the next is diff functions about File
+    //open a new page
+    public JMenuItem newopen()
+    {
+        JMenuItem newopen = new JMenuItem("New(N)", KeyEvent.VK_N);
+        newopen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
+        newopen.addActionListener(e -> workArea.setDocument(new DefaultStyledDocument()));
+        return newopen;
+
     }
 
     //open a file which already been written
@@ -186,6 +223,85 @@ public class TextFIle extends JFrame {
         }
     }
 
+    //here is function about print files
+    private JMenuItem print()
+    {
+        JMenuItem print = new JMenuItem("Print(P)", KeyEvent.VK_P);
+        print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+        print.addActionListener(e -> {
+            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
+            PrintService[] printService = PrintServiceLookup.lookupPrintServices(flavor, pras);
+            PrintService defaultService = PrintServiceLookup.lookupDefaultPrintService();
+            PrintService service;
+            service = ServiceUI.printDialog(null, 100, 100, printService, defaultService, flavor, pras);
+            if (service != null)
+            {
+                DocPrintJob job = service.createPrintJob();
+                DocAttributeSet das = new HashDocAttributeSet();
+                Doc doc = new SimpleDoc(createJMenuBar().getMenu(0).getText().getBytes(), flavor, das);
+                try {
+                    job.print(doc, pras);
+                } catch (PrintException printException) {
+                    printException.printStackTrace();
+                }
+            }
+        });
+        return print;
+    }
+
+    //exit from the text-editor
+    private JMenuItem exit()
+    {
+        JMenuItem exit = new JMenuItem("Exit(E)", KeyEvent.VK_E);
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+        exit.addActionListener(arg0 -> System.exit(0));
+        return exit;
+    }
+
+    //here is function about edit
+
+    //revocation operation you did
+    private JMenuItem revocation()
+    {
+        workArea.getDocument().addUndoableEditListener(um);
+        JMenuItem revocation = new JMenuItem("Revocation(U)", KeyEvent.VK_Z);
+        revocation.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+        revocation.addActionListener(e -> {
+            if (um.canUndo()) {
+                um.undo();
+            }
+        });
+        return revocation;
+    }
+
+    //cut text from the whole one
+    private JMenuItem cut()
+    {
+        JMenuItem cut=new JMenuItem("Cut(T)", KeyEvent.VK_T);
+        cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
+        cut.addActionListener(e -> workArea.cut());
+        return cut;
+    }
+
+    //copy, have another same one
+    private JMenuItem copy()
+    {
+        JMenuItem copy = new JMenuItem("Copy(C)", KeyEvent.VK_C);
+        copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        copy.addActionListener(e -> workArea.copy());
+        return copy;
+    }
+
+    //put something you already copied
+    private JMenuItem paste()
+    {
+        JMenuItem paste = new JMenuItem("Paste(V)", KeyEvent.VK_V);
+        paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+        paste.addActionListener(e -> workArea.paste());
+        return paste;
+    }
+
     //to find words which you want to notice
     private JMenuItem search()
     {
@@ -193,6 +309,16 @@ public class TextFIle extends JFrame {
         search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
         search.addActionListener(e -> Find());
         return search;
+    }
+
+    //here is function about help,it's just have names and StudentID who did the text-editor
+    private JMenuItem help()
+    {
+        JMenuItem help = new JMenuItem("Help(H)", KeyEvent.VK_H);
+        help.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
+        help.addActionListener(e -> JOptionPane.showMessageDialog(null,"Member A:Jay Sun 20007886 \n" +
+                "Member B:Dylan Li 20007903"));
+        return help;
     }
 
     //a function to help find
@@ -231,7 +357,7 @@ public class TextFIle extends JFrame {
 
             if(upButton.isSelected())
             {
-                k = index(str1,str2);
+                k = str1.lastIndexOf(str2, workArea.getCaretPosition()-findText.getText().length()-1);
                 if(k>-1)
                 {
                     workArea.setCaretPosition(k);
