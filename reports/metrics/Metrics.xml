@@ -1,0 +1,18 @@
+<METRICS profile="assignment" timestamp="ÖÜÈý, 13 10ÔÂ 2021 19:41:31 CST">
+	<METRIC category="Class" name="Coupling between objects" abbreviation="CBO">
+		<VALUE measured="org.example.TestFileTest" value="1.0"/>
+		<VALUE measured="org.example.TextFIle" value="1.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Lines of code" abbreviation="LOC">
+		<VALUE measured="project" value="916.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Number of methods" abbreviation="METH">
+		<VALUE measured="project" value="30.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Average cyclomatic complexity" abbreviation="v(G)avg">
+		<VALUE measured="project" value="2.7666666666666666"/>
+	</METRIC>
+	<METRIC category="Project" name="Total cyclomatic complexity" abbreviation="v(G)tot">
+		<VALUE measured="project" value="83.0"/>
+	</METRIC>
+</METRICS>
