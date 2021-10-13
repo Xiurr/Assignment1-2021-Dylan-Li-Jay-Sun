@@ -22,9 +22,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
-public class TextFIle extends JFrame {
+public class TextFIle extends JFrame
+{
     public JFileChooser filechooser = new JFileChooser();
     public FileDialog openDia;
     public static StyledDocument doc = new DefaultStyledDocument();
@@ -39,37 +41,36 @@ public class TextFIle extends JFrame {
 
 
     //Main function that sets the implementation of the page
-    public static void main(String[] args) {
-
+    public static void main(String[] args)
+    {
         setUIFont();
         TextFIle frame = new TextFIle();
-
         frame.setVisible(true);
     }
-
     //Sets the global font for the text editor menu bar
-    public static void setUIFont() {
-        Font f = new Font("楷体", Font.PLAIN, 20);
-        String[] names = {"Title", "Label", "CheckBox", "PopupMenu", "MenuItem", "CheckBoxMenuItem",
-                "JRadioButtonMenuItem", "ComboBox", "Button", "Tree", "ScrollPane",
+    public static void setUIFont()
+    {
+        Font f = new Font("楷体",Font.PLAIN,20);
+        String[] names ={ "Title","Label", "CheckBox", "PopupMenu","MenuItem", "CheckBoxMenuItem",
+                "JRadioButtonMenuItem","ComboBox", "Button", "Tree", "ScrollPane",
                 "TabbedPane", "EditorPane", "TitledBorder", "Menu", "TextArea",
                 "OptionPane", "MenuBar", "ToolBar", "ToggleButton", "ToolTip",
                 "ProgressBar", "TableHeader", "Panel", "List", "ColorChooser",
-                "PasswordField", "TextField", "Table", "Label", "Viewport",
-                "RadioButtonMenuItem", "RadioButton", "DesktopPane", "InternalFrame", "JTextPane"
+                "PasswordField","TextField", "Table", "Label", "Viewport",
+                "RadioButtonMenuItem","RadioButton", "DesktopPane", "InternalFrame", "JTextPane"
         };
         for (String item : names) {
-            UIManager.put(item + ".font", f);
+            UIManager.put(item+ ".font",f);
         }
     }
-
     //The main TextFIle that designs the text editor's window content
-    public TextFIle() {
-        openDia = new FileDialog(this, "Open(O)", FileDialog.LOAD);
+    public TextFIle()
+    {
+        openDia = new FileDialog(this,"Open(O)",FileDialog.LOAD);
         um = new UndoManager();
         //Design the entire UI, including size, name, layout
         setTitle("Text Editor");
-        setBounds(300, 300, 700, 700);
+        setBounds(300,300,700,700);
         setJMenuBar(createJMenuBar());
         JScrollPane imgScrollPane = new JScrollPane(workArea);
         GridLayout gridLayout = new GridLayout(1, 2);
@@ -79,27 +80,30 @@ public class TextFIle extends JFrame {
         jPanelNorth.add(jLabelTime);
         workArea.getDocument().addUndoableEditListener(um);
         add(jPanelNorth, BorderLayout.NORTH);
-        add(imgScrollPane, BorderLayout.CENTER);
+        add(imgScrollPane,BorderLayout.CENTER);
         time().start();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     //Build the text editor's menu bar and add the desired function labels to it
-    public JMenuBar createJMenuBar() {
-        JMenuBar menubar = new JMenuBar();
+    public JMenuBar createJMenuBar()
+    {
+        JMenuBar menubar=new JMenuBar();
 
-        JMenu menuFile = new JMenu("File");
-        JMenu menuEdit = new JMenu("Edit");
-        JMenu menuAbout = new JMenu("Help");
+        JMenu menuFile=new JMenu("File");
+        JMenu menuEdit=new JMenu("Edit");
+        JMenu menuAbout=new JMenu("Help");
 
         //File functions
         menuFile.add(newopen());
         menuFile.add(open());
-        menuFile.add(openJAVA());
-        menuFile.add(openPYTHON());
-        menuFile.add(openCPP());
+        menuFile.add(openOther());
+        menuFile.add(openRTF());
+        menuFile.add(openPDF());
         menuFile.addSeparator();
         menuFile.add(save());
+        menuFile.add(savePDF());
+        menuFile.add(saveODT());
         menuFile.add(print());
         menuFile.add(exit());
 
@@ -113,7 +117,6 @@ public class TextFIle extends JFrame {
 
         //Help functions
         menuAbout.add(help());
-
         //put them in the menubar
         menubar.add(menuFile);
         menubar.add(menuEdit);
@@ -147,8 +150,9 @@ public class TextFIle extends JFrame {
     }
 
     //open a file which already been written
-    public JMenuItem open() {
-        JMenuItem open = new JMenuItem("Open(O)", KeyEvent.VK_O);
+    public JMenuItem open()
+    {
+        JMenuItem open = new JMenuItem("Open(O)",KeyEvent.VK_O);
         open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
         open.addActionListener(arg0 -> {
             openDia.setVisible(true);
@@ -158,14 +162,13 @@ public class TextFIle extends JFrame {
                 return;
             }
             workArea.setText("");
-            workArea.setText(OPEN(dirPath, fileName));
+            workArea.setText(OPEN(dirPath,fileName));
         });
         return open;
-
     }
-
     //a function to help open
-    public static String OPEN(String dirpath,String filename){
+    public static String OPEN(String dirpath,String filename)
+    {
         File file0 = new File(dirpath,filename);
         char[] lines = new char[(int) file0.length()];
         try {
@@ -188,12 +191,12 @@ public class TextFIle extends JFrame {
         return new String(lines);
     }
 
-    //open file who end with .py and show the highlight of the keywords
-    private JMenuItem openPYTHON()
+    //open file who end with .py,.java or .cpp and show the highlight of the keywords
+    private JMenuItem openOther()
     {
-        JMenuItem openPYTHON = new JMenuItem("OpenPYTHON(Y)",KeyEvent.VK_Y);
-        openPYTHON.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
-        openPYTHON.addActionListener(arg0 -> {
+        JMenuItem openOther = new JMenuItem("OpenOther(Y)",KeyEvent.VK_Y);
+        openOther.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+        openOther.addActionListener(arg0 -> {
             openDia.setVisible(true);
             String dirPath = openDia.getDirectory();
             String fileName = openDia.getFile();
@@ -203,214 +206,27 @@ public class TextFIle extends JFrame {
             workArea.setText("");
             File fileO = new File(dirPath, fileName);
             String finalfile = readFromFile(fileO);
-
             String finalfile1 = finalfile.replace("\n", "");
             char[] arr = finalfile1.toCharArray();
             //this is the keyword's database
+
             String[] PkeywordsRED = {"from","for","finally","except","else","elif","del","def","continue","class","break","and","as","assert"};
             String[] PkeywordsORANGE = {"with","while","try","raise","return","print","pass","or","not","lambda","global","if","import","is","in"};
             String[] PkeywordsPURPLE = {"format","list","float","type","range","len","bool","tuple","file","input","open","all","int","str","sum","super","print"};
-            workArea.setText(finalfile);
-            testArea.setText(finalfile1);
-            SimpleAttributeSet set = new SimpleAttributeSet();
-            StyleConstants.setForeground(set, new Color(226, 87, 78));
-
-            SimpleAttributeSet set1 = new SimpleAttributeSet();
-            StyleConstants.setForeground(set1, new Color(191, 131, 30));
-
-            SimpleAttributeSet set2 = new SimpleAttributeSet();
-            StyleConstants.setForeground(set2, new Color(177, 80, 176));
-
-            //Realizing keyword discoloration, diff database have diff colors
-            for (String item:PkeywordsRED) {
-                int k;
-                int l;
-                testArea.setCaretPosition(finalfile1.length());
-
-                while (true) {
-                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
-                        testArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set, true);}
-                        else{
-                            continue;
-                        }
-                    }
-                    if (k==-1){
-                        break;
-                    }
-                }
-            }
-            for (String item:PkeywordsORANGE) {
-                int k;
-                int l;
-                testArea.setCaretPosition(finalfile1.length());
-
-                while (true) {
-                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
-                        testArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set1, true);}
-                        else{
-                            continue;
-                        }
-                    }
-                    if (k==-1){
-                        break;
-                    }
-                }
-            }
-            for (String item:PkeywordsPURPLE) {
-                int k;
-                int l;
-                testArea.setCaretPosition(finalfile1.length());
-
-                while (true) {
-                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
-                        testArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set2, true);}
-                        else{
-                            continue;
-                        }
-                    }
-                    if (k==-1){
-                        break;
-                    }
-                }
-            }
-        });
-        return openPYTHON;
-    }
-
-
-    //open file who end with .java and show the highlight of the keywords
-    private JMenuItem openJAVA()
-    {
-        JMenuItem openJAVA = new JMenuItem("OpenJAVA(J)",KeyEvent.VK_J);
-        openJAVA.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, InputEvent.CTRL_MASK));
-        openJAVA.addActionListener(arg0 -> {
-            openDia.setVisible(true);
-            String dirPath = openDia.getDirectory();
-            String fileName = openDia.getFile();
-            if (dirPath == null || fileName == null) {
-                return;
-            }
-            workArea.setText("");
-            File fileO = new File(dirPath, fileName);
-            String finalfile = readFromFile(fileO);
-            char[] arr = finalfile.toCharArray();
 
             String[] JkeywordsRED = {"package", "public", "protected", "private", "class", "interface", "abstract", "implements", "extends", "new", "try", "catch", "throw"};
             String[] JkeywordsORANGE = {"null", "true", "false", "void", "import", "package", "byte", "char", "boolean", "double", "short", "int", "long", "float"};
             String[] JkeywordsPURPLE = {"this", "super", "final", "static", "return", "continue", "if", "else", "while", "for", "switch", "case", "default", "do", "break"};
-            workArea.setText(finalfile);
 
-            SimpleAttributeSet set = new SimpleAttributeSet();
-            StyleConstants.setForeground(set, new Color(226, 87, 78));
+            String[] CkeywordsRED = {"if","else","while","signed","throw","union","this","int","char","double","unsigned","const","goto","virtual","for","float","break","auto","class","operator"};
+            String[] CkeywordsORANGE = {"do","long","typedef","static","friend","template","default","new","void","register","extern","return","enum","inline"};
+            String[] CkeywordsPURPLE = {"try","short","continue","sizeof","switch","private","protected","asm","while","catch","delete","public","volatile","struct"};
 
-            SimpleAttributeSet set1 = new SimpleAttributeSet();
-            StyleConstants.setForeground(set1, new Color(191, 131, 30));
+            String[][] keywordsRED = new String[][]{PkeywordsRED, JkeywordsRED, CkeywordsRED};
+            String[][] keywordsORANGE = new String[][]{PkeywordsORANGE,JkeywordsORANGE,CkeywordsORANGE};
+            String[][] keywordsPURPLE = new String[][]{PkeywordsPURPLE,JkeywordsPURPLE,CkeywordsPURPLE};
 
-            SimpleAttributeSet set2 = new SimpleAttributeSet();
-            StyleConstants.setForeground(set2, new Color(177, 80, 176));
-            workArea.setCaretPosition(workArea.getDocument().getLength());
-
-            //Realizing keyword discoloration, diff database have diff colors
-            for (String item:JkeywordsRED) {
-                int k;
-                int l;
-                workArea.setCaretPosition(workArea.getDocument().getLength());
-                while (true) {
-                    k = workArea.getText().lastIndexOf(item, workArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
-                        workArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set, true);}
-                        else{
-                            continue;
-                        }
-                    }
-                    if (k==-1){
-                        break;
-                    }
-                }
-            }
-
-            for (String item:JkeywordsORANGE) {
-                int k;
-                int l;
-                workArea.setCaretPosition(workArea.getDocument().getLength());
-                while (true) {
-                    k = workArea.getText().lastIndexOf(item, workArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
-                        workArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set1, true);}
-                        else{
-                            continue;
-                        }
-                    }
-                    if (k==-1){
-                        break;
-                    }
-                }
-            }
-            for (String item:JkeywordsPURPLE) {
-                int k;
-                int l;
-                workArea.setCaretPosition(workArea.getDocument().getLength());
-                while (true) {
-                    k = workArea.getText().lastIndexOf(item, workArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
-                        workArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set2, true);}
-                        else{
-                            continue;
-                        }
-                    }
-                    if (k==-1){
-                        break;
-                    }
-                }
-            }
-        });
-        return openJAVA;
-
-    }
-
-
-    //open file who end with .cpp and show the highlight of the keywords
-    private JMenuItem openCPP()
-    {
-        JMenuItem openCPP = new JMenuItem("OpenCPP(B)",KeyEvent.VK_B);
-        openCPP.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_MASK));
-        openCPP.addActionListener(arg0 -> {
-            openDia.setVisible(true);
-            String dirPath = openDia.getDirectory();
-            String fileName = openDia.getFile();
-            if (dirPath == null || fileName == null) {
-                return;
-            }
-            workArea.setText("");
-            File fileO = new File(dirPath, fileName);
-            String finalfile = readFromFile(fileO);
-
-            String finalfile1 = finalfile.replace("\n", "");
-            char[] arr = finalfile1.toCharArray();
-            String[] PkeywordsRED = {"from","for","finally","except","else","elif","del","def","continue","class","break","and","as","assert"};
-            String[] PkeywordsORANGE = {"with","while","try","raise","return","print","pass","or","not","lambda","global","if","import","is","in"};
-            String[] PkeywordsPURPLE = {"format","list","float","type","range","len","bool","tuple","file","input","open","all","int","str","sum","super","print"};
+            int a = 0;
             workArea.setText(finalfile);
             testArea.setText(finalfile1);
             SimpleAttributeSet set = new SimpleAttributeSet();
@@ -422,74 +238,138 @@ public class TextFIle extends JFrame {
             SimpleAttributeSet set2 = new SimpleAttributeSet();
             StyleConstants.setForeground(set2, new Color(177, 80, 176));
 
+            if (fileName.endsWith(".java")) {a=1;}
+            else if (fileName.endsWith(".py")){a=0;}
+            else if (fileName.endsWith(".cpp") || fileName.endsWith(".c")){a=2;}
+
             //Realizing keyword discoloration, diff database have diff colors
-            for (String item:PkeywordsRED) {
+            for (String item : keywordsRED[a]) {
                 int k;
                 int l;
                 testArea.setCaretPosition(finalfile1.length());
 
                 while (true) {
                     k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
+                    l = k + item.length();
+                    if (k > -1) {
                         testArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set, true);}
-                        else{
+                        if (Word(arr, l - 1, item)) {
+                            doc.setCharacterAttributes(k, item.length(), set, true);
+                        } else {
                             continue;
                         }
                     }
-                    if (k==-1){
+                    if (k == -1) {
                         break;
                     }
                 }
             }
-            for (String item:PkeywordsORANGE) {
+            for (String item : keywordsORANGE[a]) {
                 int k;
                 int l;
                 testArea.setCaretPosition(finalfile1.length());
 
                 while (true) {
                     k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
+                    l = k + item.length();
+                    if (k > -1) {
                         testArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set1, true);}
-                        else{
+                        if (Word(arr, l - 1, item)) {
+                            doc.setCharacterAttributes(k, item.length(), set1, true);
+                        } else {
                             continue;
                         }
                     }
-                    if (k==-1){
+                    if (k == -1) {
                         break;
                     }
                 }
             }
-            for (String item:PkeywordsPURPLE) {
+            for (String item : keywordsPURPLE[a]) {
                 int k;
                 int l;
                 testArea.setCaretPosition(finalfile1.length());
 
                 while (true) {
                     k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
-                    l=k+item.length();
-                    if (k > -1 ) {
+                    l = k + item.length();
+                    if (k > -1) {
                         testArea.setCaretPosition(k);
-                        if(Word(arr,l-1,item)){
-                            doc.setCharacterAttributes(k, item.length(), set2, true);}
-                        else{
+                        if (Word(arr, l - 1, item)) {
+                            doc.setCharacterAttributes(k, item.length(), set2, true);
+                        } else {
                             continue;
                         }
                     }
-                    if (k==-1){
+                    if (k == -1) {
                         break;
                     }
                 }
             }
         });
-        return openCPP;
+        return openOther;
     }
 
+    //open file belong RTF
+    private JMenuItem openRTF()
+    {
+        JMenuItem openRTF = new JMenuItem("OpenRTF(D)",KeyEvent.VK_R);
+        openRTF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
+        openRTF.addActionListener(arg0 -> {
+            openDia.setVisible(true);
+            String dirPath = openDia.getDirectory();
+            String fileName = openDia.getFile();
+            if(dirPath == null || fileName == null){
+                return;
+            }
+            workArea.setText("");
+            File file = new File(dirPath,fileName);
+            try{
+                DefaultStyledDocument styledDoc = new DefaultStyledDocument();
+                InputStream is = new FileInputStream(file);
+                new RTFEditorKit().read(is, styledDoc, 0);
+                String line;
+                line = new String(styledDoc.getText(0, styledDoc.getLength()).getBytes("ISO8859_1"), "GBK");
+                workArea.setText(workArea.getText()+line+"\r\n");
+                is.close();
+            }catch(IOException | BadLocationException er1){
+                throw new RuntimeException("Fail to read !");
+            }
+
+        });
+        return openRTF;
+    }
+
+    //open file belong PDF
+    private JMenuItem openPDF()
+    {
+        JMenuItem openPDF = new JMenuItem("OpenPDF(M)",KeyEvent.VK_M);
+        openPDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
+        openPDF.addActionListener(arg0 -> {
+            try {
+                openDia.setVisible(true);
+                String dirPath = openDia.getDirectory();
+                String fileName = openDia.getFile();
+                if (dirPath == null || fileName == null) {
+                    return;
+                }
+                workArea.setText("");
+                initfile = PDDocument.load(new File(dirPath, fileName));
+                PDFTextStripper textStripper = new PDFTextStripper();
+                String line;
+                line = textStripper.getText(initfile);
+                workArea.setText(workArea.getText()+line+"\r\n");
+                initfile.close();
+            } catch (IOException er1) {
+                throw new RuntimeException("Fail to read !");
+            }
+        });
+        return openPDF;
+    }
+
+    //here is save function
+
+    //save .txt files
     private JMenuItem save()
     {
         JMenuItem save = new JMenuItem("Save(S)", KeyEvent.VK_S);
@@ -527,6 +407,69 @@ public class TextFIle extends JFrame {
             e.printStackTrace();
         }
     }
+
+    //save PDF file
+    private JMenuItem savePDF()
+    {
+
+        JMenuItem savePDF = new JMenuItem("Save as PDF(F)", KeyEvent.VK_F);
+        savePDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK | InputEvent.SHIFT_DOWN_MASK, true));
+        savePDF.addActionListener(e -> {
+            int i=filechooser.showSaveDialog(TextFIle.this);
+            if(i==JFileChooser.APPROVE_OPTION)
+            {
+                try
+                {
+                    PDDocument fir;
+                    PDPage sec;
+                    fir = new PDDocument();
+                    sec = new PDPage();
+                    fir.addPage(sec);
+                    PDFont font = PDType1Font.TIMES_BOLD;
+                    PDPageContentStream content = new PDPageContentStream(fir, sec);
+                    content.beginText();
+                    content.setFont(font, 15);
+                    content.moveTextPositionByAmount(100, 700);
+                    content.drawString(workArea.getText());
+                    content.endText();
+                    content.close();
+                    fir.save(filechooser.getSelectedFile().getPath());
+                    fir.close();
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        return savePDF;
+    }
+
+    //save ODT files
+    private JMenuItem saveODT()
+    {
+
+        JMenuItem saveODT = new JMenuItem("Save as ODT(T)", KeyEvent.VK_T);
+        saveODT.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK | InputEvent.SHIFT_DOWN_MASK, true));
+        saveODT.addActionListener(e -> {
+            int i=filechooser.showSaveDialog(TextFIle.this);
+            if(i==JFileChooser.APPROVE_OPTION)
+            {
+                try
+                {
+                    OdfTextDocument odt = org.odftoolkit.odfdom.doc.OdfTextDocument.newTextDocument();
+                    odt.addText(workArea.getText());
+                    odt.save(filechooser.getSelectedFile().getPath());
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        return saveODT;
+    }
+
 
     //here is function about print files
     private JMenuItem print()
@@ -626,7 +569,7 @@ public class TextFIle extends JFrame {
         return help;
     }
 
-    //a function to help find
+    //a funtion to help fing
     public static int index(String str1,String str2) {
         JTextPane textPane1 = new JTextPane();
         textPane1.setText(str1);
@@ -755,6 +698,4 @@ public class TextFIle extends JFrame {
             return new String(lines);
         }
     }
-
-
 }
