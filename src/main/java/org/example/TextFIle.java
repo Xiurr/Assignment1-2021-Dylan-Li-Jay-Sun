@@ -95,6 +95,9 @@ public class TextFIle extends JFrame {
         //File functions
         menuFile.add(newopen());
         menuFile.add(open());
+        menuFile.add(openJAVA());
+        menuFile.add(openPYTHON());
+        menuFile.add(openCPP());
         menuFile.addSeparator();
         menuFile.add(save());
         menuFile.add(print());
@@ -183,6 +186,308 @@ public class TextFIle extends JFrame {
         }
 
         return new String(lines);
+    }
+
+    //open file who end with .py and show the highlight of the keywords
+    private JMenuItem openPYTHON()
+    {
+        JMenuItem openPYTHON = new JMenuItem("OpenPYTHON(Y)",KeyEvent.VK_Y);
+        openPYTHON.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+        openPYTHON.addActionListener(arg0 -> {
+            openDia.setVisible(true);
+            String dirPath = openDia.getDirectory();
+            String fileName = openDia.getFile();
+            if (dirPath == null || fileName == null) {
+                return;
+            }
+            workArea.setText("");
+            File fileO = new File(dirPath, fileName);
+            String finalfile = readFromFile(fileO);
+
+            String finalfile1 = finalfile.replace("\n", "");
+            char[] arr = finalfile1.toCharArray();
+            //this is the keyword's database
+            String[] PkeywordsRED = {"from","for","finally","except","else","elif","del","def","continue","class","break","and","as","assert"};
+            String[] PkeywordsORANGE = {"with","while","try","raise","return","print","pass","or","not","lambda","global","if","import","is","in"};
+            String[] PkeywordsPURPLE = {"format","list","float","type","range","len","bool","tuple","file","input","open","all","int","str","sum","super","print"};
+            workArea.setText(finalfile);
+            testArea.setText(finalfile1);
+            SimpleAttributeSet set = new SimpleAttributeSet();
+            StyleConstants.setForeground(set, new Color(226, 87, 78));
+
+            SimpleAttributeSet set1 = new SimpleAttributeSet();
+            StyleConstants.setForeground(set1, new Color(191, 131, 30));
+
+            SimpleAttributeSet set2 = new SimpleAttributeSet();
+            StyleConstants.setForeground(set2, new Color(177, 80, 176));
+
+            //Realizing keyword discoloration, diff database have diff colors
+            for (String item:PkeywordsRED) {
+                int k;
+                int l;
+                testArea.setCaretPosition(finalfile1.length());
+
+                while (true) {
+                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        testArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+            for (String item:PkeywordsORANGE) {
+                int k;
+                int l;
+                testArea.setCaretPosition(finalfile1.length());
+
+                while (true) {
+                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        testArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set1, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+            for (String item:PkeywordsPURPLE) {
+                int k;
+                int l;
+                testArea.setCaretPosition(finalfile1.length());
+
+                while (true) {
+                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        testArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set2, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+        });
+        return openPYTHON;
+    }
+
+
+    //open file who end with .java and show the highlight of the keywords
+    private JMenuItem openJAVA()
+    {
+        JMenuItem openJAVA = new JMenuItem("OpenJAVA(J)",KeyEvent.VK_J);
+        openJAVA.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, InputEvent.CTRL_MASK));
+        openJAVA.addActionListener(arg0 -> {
+            openDia.setVisible(true);
+            String dirPath = openDia.getDirectory();
+            String fileName = openDia.getFile();
+            if (dirPath == null || fileName == null) {
+                return;
+            }
+            workArea.setText("");
+            File fileO = new File(dirPath, fileName);
+            String finalfile = readFromFile(fileO);
+            char[] arr = finalfile.toCharArray();
+
+            String[] JkeywordsRED = {"package", "public", "protected", "private", "class", "interface", "abstract", "implements", "extends", "new", "try", "catch", "throw"};
+            String[] JkeywordsORANGE = {"null", "true", "false", "void", "import", "package", "byte", "char", "boolean", "double", "short", "int", "long", "float"};
+            String[] JkeywordsPURPLE = {"this", "super", "final", "static", "return", "continue", "if", "else", "while", "for", "switch", "case", "default", "do", "break"};
+            workArea.setText(finalfile);
+
+            SimpleAttributeSet set = new SimpleAttributeSet();
+            StyleConstants.setForeground(set, new Color(226, 87, 78));
+
+            SimpleAttributeSet set1 = new SimpleAttributeSet();
+            StyleConstants.setForeground(set1, new Color(191, 131, 30));
+
+            SimpleAttributeSet set2 = new SimpleAttributeSet();
+            StyleConstants.setForeground(set2, new Color(177, 80, 176));
+            workArea.setCaretPosition(workArea.getDocument().getLength());
+
+            //Realizing keyword discoloration, diff database have diff colors
+            for (String item:JkeywordsRED) {
+                int k;
+                int l;
+                workArea.setCaretPosition(workArea.getDocument().getLength());
+                while (true) {
+                    k = workArea.getText().lastIndexOf(item, workArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        workArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+
+            for (String item:JkeywordsORANGE) {
+                int k;
+                int l;
+                workArea.setCaretPosition(workArea.getDocument().getLength());
+                while (true) {
+                    k = workArea.getText().lastIndexOf(item, workArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        workArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set1, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+            for (String item:JkeywordsPURPLE) {
+                int k;
+                int l;
+                workArea.setCaretPosition(workArea.getDocument().getLength());
+                while (true) {
+                    k = workArea.getText().lastIndexOf(item, workArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        workArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set2, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+        });
+        return openJAVA;
+
+    }
+
+
+    //open file who end with .cpp and show the highlight of the keywords
+    private JMenuItem openCPP()
+    {
+        JMenuItem openCPP = new JMenuItem("OpenCPP(B)",KeyEvent.VK_B);
+        openCPP.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_MASK));
+        openCPP.addActionListener(arg0 -> {
+            openDia.setVisible(true);
+            String dirPath = openDia.getDirectory();
+            String fileName = openDia.getFile();
+            if (dirPath == null || fileName == null) {
+                return;
+            }
+            workArea.setText("");
+            File fileO = new File(dirPath, fileName);
+            String finalfile = readFromFile(fileO);
+
+            String finalfile1 = finalfile.replace("\n", "");
+            char[] arr = finalfile1.toCharArray();
+            String[] PkeywordsRED = {"from","for","finally","except","else","elif","del","def","continue","class","break","and","as","assert"};
+            String[] PkeywordsORANGE = {"with","while","try","raise","return","print","pass","or","not","lambda","global","if","import","is","in"};
+            String[] PkeywordsPURPLE = {"format","list","float","type","range","len","bool","tuple","file","input","open","all","int","str","sum","super","print"};
+            workArea.setText(finalfile);
+            testArea.setText(finalfile1);
+            SimpleAttributeSet set = new SimpleAttributeSet();
+            StyleConstants.setForeground(set, new Color(226, 87, 78));
+
+            SimpleAttributeSet set1 = new SimpleAttributeSet();
+            StyleConstants.setForeground(set1, new Color(191, 131, 30));
+
+            SimpleAttributeSet set2 = new SimpleAttributeSet();
+            StyleConstants.setForeground(set2, new Color(177, 80, 176));
+
+            //Realizing keyword discoloration, diff database have diff colors
+            for (String item:PkeywordsRED) {
+                int k;
+                int l;
+                testArea.setCaretPosition(finalfile1.length());
+
+                while (true) {
+                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        testArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+            for (String item:PkeywordsORANGE) {
+                int k;
+                int l;
+                testArea.setCaretPosition(finalfile1.length());
+
+                while (true) {
+                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        testArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set1, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+            for (String item:PkeywordsPURPLE) {
+                int k;
+                int l;
+                testArea.setCaretPosition(finalfile1.length());
+
+                while (true) {
+                    k = finalfile1.lastIndexOf(item, testArea.getCaretPosition() - item.length() - 1);
+                    l=k+item.length();
+                    if (k > -1 ) {
+                        testArea.setCaretPosition(k);
+                        if(Word(arr,l-1,item)){
+                            doc.setCharacterAttributes(k, item.length(), set2, true);}
+                        else{
+                            continue;
+                        }
+                    }
+                    if (k==-1){
+                        break;
+                    }
+                }
+            }
+        });
+        return openCPP;
     }
 
     private JMenuItem save()
@@ -410,6 +715,45 @@ public class TextFIle extends JFrame {
         findDialog.setResizable(false);
         findDialog.setLocation(100,100);
         findDialog.setVisible(true);
+    }
+
+    //to help realize keywords highlight
+    private boolean Word(char[] a, int b,String item)
+    {
+        char c=a[b+1];
+        if (b - item.length() + 1 == 0){
+            return true;
+        }
+        else{char d =a[b-item.length()];
+            if (Character.isLetterOrDigit(d)){
+                return false;
+            }
+            return !Character.isLetterOrDigit(c);
+        }
+    }
+
+    //help open function
+    public String readFromFile(File file)
+    {
+        char[] lines =null;
+        try
+        {
+            FileReader fin=new FileReader(file);
+            lines=new char[(int)file.length()];
+            fin.read(lines);
+            fin.close();
+        }
+        catch(FileNotFoundException fe)
+        {
+            JOptionPane.showMessageDialog(this,"not exist");
+        }
+        catch(IOException ioex) {
+            JOptionPane.showMessageDialog(this,"fail");
+        }
+        finally
+        {
+            return new String(lines);
+        }
     }
 
 
