@@ -1,2 +1,5 @@
 language: java
 script: mvn clean test
+text:
+  text-fontfamily: 楷体
+  text-fontsize: 20
